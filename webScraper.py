@@ -3,6 +3,15 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.edge.service import Service as EdgeService
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from selenium.webdriver.edge.options import Options as EdgeOptions
 import tkinter as tk
 from PIL import Image, ImageTk
 from io import BytesIO
@@ -11,19 +20,49 @@ import requests
 # Initialize the error counter
 error_counter = 0
 
-# Setup Chrome options for headless operation
-chrome_options = Options()
-chrome_options.add_argument("--headless")  # Run Chrome in headless mode
-chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
+# Function to determine what web browser is being used
+def initialize_driver():
+    # Try to initialize Chrome
+    try:
+        chrome_options = ChromeOptions()
+        chrome_options.add_argument("--headless")  # Example of setting Chrome to headless
+        chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
+        chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
+        chrome_service = ChromeService(ChromeDriverManager().install())
+        return webdriver.Chrome(service=chrome_service, options=chrome_options)
+    except Exception as e:
+        print(f"Failed to initialize Chrome: {e}")
+
+    # If Chrome initialization fails, try Firefox
+    try:
+        firefox_options = FirefoxOptions()
+        firefox_options.add_argument("--headless")  # Example of setting Firefox to headless
+        firefox_options.add_argument("--disable-gpu")
+        firefox_options.add_argument("--window-size=1920x1080")
+        firefox_service = FirefoxService(GeckoDriverManager().install())
+        return webdriver.Firefox(service=firefox_service, options=firefox_options)
+    except Exception as e:
+        print(f"Failed to initialize Firefox: {e}")
+    
+    # If Firefox initialization fails, try Edge
+    try:
+        edge_options = EdgeOptions()
+        edge_options.add_argument("--headless")  # Example of setting Edge to headless
+        edge_options.add_argument("--disable-gpu")
+        edge_options.add_argument("--window-size=1920x1080")
+        edge_service = EdgeService(EdgeChromiumDriverManager().install())
+        return webdriver.Edge(service=edge_service, options=edge_options)
+    except Exception as e:
+        print(f"Failed to initialize Edge: {e}")
+        raise Exception("Failes to initialize Chrome, Firefox, or Edge.")
 
 
 # Setup Selenium with ChromeDriver
 service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=chrome_options)
+driver = initialize_driver()
 
 # URL of the page with the dynamic content
-url = ''
+url = 'http://10.40.36.31/iv2-wm.html'
 
 # Funciton to resize the image to the size of the window dynamically
 def resize_image(img, max_width, max_height):
@@ -46,14 +85,8 @@ def reconnect_driver():
     global driver
     driver.quit()  # Close the current driver
 
-    # Setup Chrome options for headless operation
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Run Chrome in headless mode
-    chrome_options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
-    chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
-
     # Reinitialize the driver with headless options
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = initialize_driver()
     driver.get(url)  # Reopen the URL
 
 # Function to update the image in the Tkinter window
