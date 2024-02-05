@@ -23,7 +23,7 @@ service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 # URL of the page with the dynamic content
-url = 'http://10.40.36.31/iv2-wm.html'
+url = ''
 
 # Funciton to resize the image to the size of the window dynamically
 def resize_image(img, max_width, max_height):
