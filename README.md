@@ -30,7 +30,6 @@ NOTES:
 
     If you are running into issues with the program not running on the machine, do these STEPS
 
-    verify that google chrome is installed. this program was made for chrome and chrome only. edge and firefox do not work with this program. make sure that chrome is installed on the machine
     move all the files that the pyinstaller command created to the machine you are trying to run the executable from. IDK why, but sometimes the executable does not always have all the dependencies built into it, which is should, and needs them to be there on first startup. you can delete them or put them somewhere else after first startup.
 
 anyways, that is all. if you run into any issues with this program, there is an issues tab above. create an issue request and i'll get to it.
